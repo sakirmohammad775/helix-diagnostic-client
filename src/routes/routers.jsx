@@ -6,6 +6,8 @@ import About from "../pages/About/About";
 import { createBrowserRouter } from "react-router-dom";
 import Register from "../pages/Auth/Register/Register";
 import Login from "../pages/Auth/Login/Login";
+import PrivateRoute from "./PrivateRoute";
+import Patient from "../pages/Patient/Patient";
 
 export const routers = createBrowserRouter([
   {
@@ -36,6 +38,10 @@ export const routers = createBrowserRouter([
       {
         path: "login",
         Component:Login
+      },
+      {
+        path:'patient',
+        element:<PrivateRoute><Patient></Patient></PrivateRoute>
       }
     ],
   },

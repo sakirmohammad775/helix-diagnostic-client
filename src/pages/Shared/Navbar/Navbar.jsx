@@ -1,19 +1,31 @@
-import { useState } from 'react';
-import { NavLink } from 'react-router-dom'; // LOGIC: Added React Router integration
-import { Search, ChevronDown, Menu, X } from 'lucide-react';
+import { useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom"; // LOGIC: Added React Router integration
+import { Search, ChevronDown, Menu, X } from "lucide-react";
+import useAuth from "../../../hooks/useAuth";
 
 export default function Navbar() {
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+  const handleSignOutAction = async () => {
+    try {
+      await logOut();
+      // Redirect straight to login screen on manual logout
+      navigate("/login");
+    } catch (error) {
+      console.error("Sign out transaction execution failure:", error);
+    }
+  };
   // LOGIC: State to manage mobile-responsive menu visibility
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   // Configuration object for navbar links to keep the markup clean and DRY
   const navLinks = [
-    { name: 'Home', path: '/', hasDropdown: true },
-    { name: 'About', path: '/about', hasDropdown: false },
-    { name: 'Service', path: '/services', hasDropdown: true },
-    { name: 'Blog', path: '/blog', hasDropdown: true },
-    { name: 'Pages', path: '/pages', hasDropdown: true },
-    { name: 'Contact', path: '/contact', hasDropdown: false },
+    { name: "Home", path: "/", hasDropdown: true },
+    { name: "About", path: "/about", hasDropdown: false },
+    { name: "Service", path: "/services", hasDropdown: true },
+    { name: "Blog", path: "/blog", hasDropdown: true },
+    { name: "Pages", path: "/pages", hasDropdown: true },
+    { name: "Contact", path: "/contact", hasDropdown: false },
   ];
 
   return (
@@ -24,19 +36,21 @@ export default function Navbar() {
       {/* 2. MAIN NAVBAR CONTAINER */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
-          
           {/* LOGO SECTION */}
-          <NavLink to="/" className="flex items-center space-x-3 cursor-pointer">
+          <NavLink
+            to="/"
+            className="flex items-center space-x-3 cursor-pointer"
+          >
             {/* The circular, light-blue Caduceus/Medical icon wrapper */}
             <div className="w-10 h-10 rounded-full bg-[#3ca4f4] flex items-center justify-center text-white shadow-sm">
-              <svg 
-                xmlns="http://www.w3.org/2000/svg" 
-                viewBox="0 0 24 24" 
-                fill="none" 
-                stroke="currentColor" 
-                strokeWidth="2.5" 
-                strokeLinecap="round" 
-                strokeLinejoin="round" 
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
                 className="w-5 h-5"
               >
                 <path d="M12 22V8M5 12h14M12 5a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
@@ -44,7 +58,9 @@ export default function Navbar() {
               </svg>
             </div>
             {/* Helix Text Logo */}
-            <span className="text-2xl font-black text-[#1a202c] tracking-tight">Helix</span>
+            <span className="text-2xl font-black text-[#1a202c] tracking-tight">
+              Helix
+            </span>
           </NavLink>
 
           {/* 3. DESKTOP NAVIGATION MENU (Filled & Integrated with Route handling) */}
@@ -55,9 +71,9 @@ export default function Navbar() {
                   to={link.path}
                   className={({ isActive }) =>
                     `flex items-center space-x-1 text-[15px] font-bold tracking-wide transition-colors ${
-                      isActive 
-                        ? 'text-[#3ca4f4]' 
-                        : 'text-[#0a2240] hover:text-[#3ca4f4]'
+                      isActive
+                        ? "text-[#3ca4f4]"
+                        : "text-[#0a2240] hover:text-[#3ca4f4]"
                     }`
                   }
                 >
@@ -98,15 +114,31 @@ export default function Navbar() {
             </button>
 
             {/* "Contact Now" Rounded Button */}
-            <NavLink 
-              to="/contact" 
-              className="flex items-center space-x-2 bg-[#3ca4f4] hover:bg-[#2b93e3] text-white font-bold py-3 px-7 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
-            >
-              <span className="text-[15px]">Contact Now</span>
-              <div className="flex items-center tracking-tighter">
-                <span className="text-xs font-black select-none">≫</span>
-              </div>
-            </NavLink>
+            <div>
+              {user ? (
+                /* Dynamic Output: Rendered when user session is active */
+                <button
+                  onClick={handleSignOutAction}
+                  className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-7 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <span className="text-[15px]">Logout</span>
+                  <div className="flex items-center tracking-tighter">
+                    <span className="text-xs font-black select-none">≫</span>
+                  </div>
+                </button>
+              ) : (
+                /* Fallback Output: Default view when unauthenticated */
+                <NavLink
+                  to="/login"
+                  className="flex items-center space-x-2 bg-[#3ca4f4] hover:bg-[#2b93e3] text-white font-bold py-3 px-7 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                >
+                  <span className="text-[15px]">Sign In</span>
+                  <div className="flex items-center tracking-tighter">
+                    <span className="text-xs font-black select-none">≫</span>
+                  </div>
+                </NavLink>
+              )}
+            </div>
           </div>
 
           {/* 5. MOBILE HAMBURGER BUTTON */}
@@ -114,15 +146,18 @@ export default function Navbar() {
             <button className="p-2 rounded-full border border-gray-200 text-gray-700">
               <Search className="w-5 h-5" />
             </button>
-            <button 
-              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-gray-700 hover:text-black focus:outline-none"
               aria-label="Toggle Menu"
             >
-              {isMobileMenuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+              {isMobileMenuOpen ? (
+                <X className="w-7 h-7" />
+              ) : (
+                <Menu className="w-7 h-7" />
+              )}
             </button>
           </div>
-
         </div>
       </div>
 
@@ -132,31 +167,33 @@ export default function Navbar() {
           <div className="px-4 pt-2 pb-6 space-y-1">
             {navLinks.map((link) => (
               <div key={link.name}>
-                <NavLink 
-                  to={link.path} 
+                <NavLink
+                  to={link.path}
                   // LOGIC: Automatically closes mobile menu drawer when navigation occurs
                   onClick={() => setIsMobileMenuOpen(false)}
                   className={({ isActive }) =>
                     `flex justify-between items-center py-3 px-4 rounded-lg text-base font-bold transition-colors ${
-                      isActive 
-                        ? 'bg-[#f4f8fc] text-[#3ca4f4]' 
-                        : 'text-gray-800 hover:bg-gray-50 hover:text-[#3ca4f4]'
+                      isActive
+                        ? "bg-[#f4f8fc] text-[#3ca4f4]"
+                        : "text-gray-800 hover:bg-gray-50 hover:text-[#3ca4f4]"
                     }`
                   }
                 >
                   <span>{link.name}</span>
-                  {link.hasDropdown && <ChevronDown className="w-4 h-4 text-gray-400" />}
+                  {link.hasDropdown && (
+                    <ChevronDown className="w-4 h-4 text-gray-400" />
+                  )}
                 </NavLink>
               </div>
             ))}
-            
+
             <div className="pt-4 px-4">
-              <NavLink 
-                to="/contact"
+              <NavLink
+                to="/login"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="w-full flex items-center justify-center space-x-2 bg-[#3ca4f4] hover:bg-[#2b93e3] text-white font-bold py-3 rounded-full"
               >
-                <span>Contact Now</span>
+                <span>Sign In</span>
                 <span>≫</span>
               </NavLink>
             </div>
