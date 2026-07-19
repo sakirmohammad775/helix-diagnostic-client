@@ -8,6 +8,7 @@ import Register from "../pages/Auth/Register/Register";
 import Login from "../pages/Auth/Login/Login";
 import PrivateRoute from "./PrivateRoute";
 import Patient from "../pages/Patient/Patient";
+import Profile from "../pages/Patient/Profile";
 
 export const routers = createBrowserRouter([
   {
@@ -42,6 +43,10 @@ export const routers = createBrowserRouter([
       {
         path:'patient',
         element:<PrivateRoute><Patient></Patient></PrivateRoute>
+      },
+      {
+        path:'profile',
+        element:<PrivateRoute><Profile></Profile></PrivateRoute>
       }
     ],
   },
