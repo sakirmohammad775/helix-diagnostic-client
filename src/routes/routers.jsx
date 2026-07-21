@@ -7,7 +7,11 @@ import { createBrowserRouter } from "react-router-dom";
 import Register from "../pages/Auth/Register/Register";
 import Login from "../pages/Auth/Login/Login";
 import PrivateRoute from "./PrivateRoute";
-import Patient from "../pages/Patient/Patient";
+
+import DashboardLayout from "../layout/DashboardLayout";
+import Profile from "../pages/Dashboard/Profile/Profile";
+import UpcomingAppointments from "../pages/Dashboard/DashboardHome/UpcomingAppointments";
+import TestResults from "../pages/Dashboard/DashboardHome/TestResults";
 
 export const routers = createBrowserRouter([
   {
@@ -40,9 +44,32 @@ export const routers = createBrowserRouter([
         Component:Login
       },
       {
-        path:'patient',
-        element:<PrivateRoute><Patient></Patient></PrivateRoute>
+        path:'profile',
+        element:<PrivateRoute><Profile></Profile></PrivateRoute>
       }
     ],
   },
+  {
+    path:"/dashboard",
+    element:<PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
+    children:[
+      {
+        path:'profile',
+        element:<Profile></Profile>
+      },
+      {
+        path: "profile",
+        element: <Profile />,
+      },
+      {
+        path: "appointments",
+        element: <UpcomingAppointments />,
+      },
+      {
+        path: "results",
+        element: <TestResults />,
+      },
+
+    ]
+  }
 ]);
