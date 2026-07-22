@@ -21,10 +21,10 @@ export default function Navbar() {
   // Configuration object for navbar links to keep the markup clean and DRY
   const navLinks = [
     { name: "Home", path: "/", hasDropdown: true },
-    { name: "About", path: "/about", hasDropdown: false },
+    { name: "All Test", path: "/tests", hasDropdown: true },
     { name: "Service", path: "/services", hasDropdown: true },
+    { name: "About", path: "/about", hasDropdown: false },
     { name: "Blog", path: "/blog", hasDropdown: true },
-    { name: "Pages", path: "/pages", hasDropdown: true },
     { name: "Contact", path: "/contact", hasDropdown: false },
   ];
 
@@ -117,15 +117,28 @@ export default function Navbar() {
             <div>
               {user ? (
                 /* Dynamic Output: Rendered when user session is active */
-                <button
-                  onClick={handleSignOutAction}
-                  className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-7 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
-                >
-                  <span className="text-[15px]">Logout</span>
-                  <div className="flex items-center tracking-tighter">
-                    <span className="text-xs font-black select-none">≫</span>
+                <>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={handleSignOutAction}
+                      className="flex items-center space-x-2 bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-7 rounded-full shadow-md hover:shadow-lg transition-all duration-300"
+                    >
+                      <span className="text-[15px]">Logout</span>
+                      <div className="flex items-center tracking-tighter">
+                        <span className="text-xs font-black select-none">
+                          ≫
+                        </span>
+                      </div>
+                    </button>
+                    <NavLink to='/dashboard/profile'>
+                      <img
+                        src={user.photoURL}
+                        alt="Profile"
+                        className="w-10 h-10 rounded-full border border-gray-300 object-cover"
+                      />
+                    </NavLink>
                   </div>
-                </button>
+                </>
               ) : (
                 /* Fallback Output: Default view when unauthenticated */
                 <NavLink

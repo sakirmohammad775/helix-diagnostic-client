@@ -1,151 +1,182 @@
-
-// LOGIC: Using strictly react-icons/fa to comply with project linting rules
+import { Link } from 'react-router-dom';
 import { 
-  FaPlay, 
-  FaHeadset, 
-  FaUserTie, 
-  FaCheckCircle, 
-  FaChevronRight 
-} from 'react-icons/fa';
+  ShieldCheck, 
+  Award, 
+  Microscope, 
+  Users, 
+  Clock, 
+  CheckCircle2, 
+  ArrowRight 
+} from 'lucide-react';
 
-export default function About() {
+const About = () => {
+  // Reusable core features list
+  const features = [
+    {
+      icon: ShieldCheck,
+      title: "ISO & CAP Certified Labs",
+      description: "Our diagnostic laboratories follow rigorous international quality control standards to ensure 100% precision."
+    },
+    {
+      icon: Microscope,
+      title: "Advanced Diagnostic Tech",
+      description: "Equipped with state-of-the-art MRI, CT Scanners, and automated blood analyzer machines."
+    },
+    {
+      icon: Clock,
+      title: "Rapid Report Delivery",
+      description: "Access your verified digital test reports online through your private patient portal within 24 hours."
+    },
+    {
+      icon: Award,
+      title: "Expert Pathologists",
+      description: "All test evaluations and diagnostics are cross-verified by specialized certified medical officers."
+    }
+  ];
+
+  // Key stats counter display
+  const stats = [
+    { label: "Successful Diagnostics", value: "250K+" },
+    { label: "Certified Specialists", value: "45+" },
+    { label: "Available Test Panels", value: "120+" },
+    { label: "Patient Satisfaction", value: "99.2%" }
+  ];
+
   return (
-    <section className="relative w-full py-16 lg:py-24 bg-white overflow-hidden">
-      
-      {/* 1. DECORATIVE RIGHT STETHOSCOPE/BACKGROUND DESIGN */}
-      {/* Absolute positioning mimicking the stylized element on the right of the reference */}
-      <div className="absolute right-4 bottom-12 w-32 h-64 opacity-20 pointer-events-none hidden xl:block">
-        <div className="w-full h-full border-r-4 border-b-4 border-[#3ca4f4] rounded-br-[4rem] relative">
-          <div className="absolute top-0 right-[-6px] w-5 h-5 bg-[#0a2240] rounded-full" />
-          <div className="absolute top-1/2 left-0 w-3 h-3 bg-gray-400 rounded-full" />
-        </div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-          
-          {/* LEFT COLUMN: MULTI-IMAGE COMPOSITION WITH EXPERIENCE BADGE (5/12 Columns) */}
-          <div className="lg:col-span-5 relative">
+    <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto space-y-16">
+        
+        {/* 1. Hero / Intro Section */}
+        <section className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          <div className="space-y-6">
+            <span className="bg-blue-100 text-blue-700 text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full">
+              About Helix Diagnostic
+            </span>
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-gray-900 leading-tight">
+              Pioneering Precision Medical Diagnostics for a Healthier Tomorrow
+            </h1>
+            <p className="text-gray-600 text-base sm:text-lg leading-relaxed">
+              At Helix Diagnostic Center, we bridge cutting-edge laboratory technology with compassionate patient care. Founded with a commitment to clinical excellence, we deliver reliable, timely, and actionable health insights to empower your medical decisions.
+            </p>
             
-            {/* Background Decorative Blue Semi-Circle */}
-            <div className="absolute -left-8 -top-8 w-24 h-24 border-[12px] border-[#3ca4f4] rounded-full border-r-transparent border-t-transparent pointer-events-none opacity-80" />
-            
-            {/* Main Upper Image */}
-            <div className="relative z-10 w-[85%] rounded-2xl overflow-hidden shadow-lg border-4 border-white aspect-[4/3] bg-gray-100">
-              <img 
-                src="https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=600&q=80" 
-                alt="Hotel Heaven Lobby Reception" 
-                className="w-full h-full object-cover"
-              />
+            <div className="flex flex-wrap gap-4 pt-2">
+              <Link
+                to="/tests"
+                className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md transition-all"
+              >
+                <span>Browse All Tests</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to="/dashboard/profile"
+                className="inline-flex items-center gap-2 bg-white border border-gray-300 hover:bg-gray-100 text-gray-800 font-semibold px-6 py-3 rounded-xl transition-all"
+              >
+                <span>Patient Portal</span>
+              </Link>
             </div>
-
-            {/* Overlapping Lower Image */}
-            <div className="absolute right-0 bottom-[-40px] z-20 w-[60%] rounded-2xl overflow-hidden shadow-xl border-4 border-white aspect-[4/3] bg-gray-100">
-              <img 
-                src="https://images.unsplash.com/photo-1582719508461-905c673771fd?auto=format&fit=crop&w=400&q=80" 
-                alt="Luxury Suite Room Design" 
-                className="w-full h-full object-cover"
-              />
-            </div>
-
-            {/* Floating Experience Badge (Navy circle overlapping the images) */}
-            <div className="absolute left-[20%] bottom-[-20px] z-30 w-28 h-28 sm:w-32 sm:h-32 bg-[#0a2240] text-white rounded-full flex flex-col items-center justify-center text-center p-2 shadow-2xl border-4 border-white animate-bounce-slow">
-              <span className="text-xl sm:text-2xl font-black text-[#3ca4f4]">15+</span>
-              <span className="text-[10px] sm:text-xs font-bold tracking-wider uppercase leading-tight">Years of<br />Hospitality</span>
-            </div>
-
-            {/* Decorative Dot Matrix Grid */}
-            <div className="absolute left-0 bottom-[-60px] w-24 h-24 opacity-30 pointer-events-none hidden sm:block">
-              <div className="grid grid-cols-5 gap-2">
-                {[...Array(25)].map((_, i) => (
-                  <div key={i} className="w-1.5 h-1.5 bg-gray-400 rounded-full" />
-                ))}
-              </div>
-            </div>
-
-            {/* Vertical Text "How We Work" & Play Trigger (Placed right of the images) */}
-            <div className="absolute -right-4 top-1/4 h-1/2 flex flex-col items-center justify-center space-y-4 z-20 hidden sm:flex">
-              <span className="text-[10px] font-black uppercase text-gray-400 tracking-widest [writing-mode:vertical-lr] rotate-180">
-                Discover Our Story
-              </span>
-              <button className="w-10 h-10 rounded-full bg-[#3ca4f4] hover:bg-[#2b93e3] text-white flex items-center justify-center shadow-lg transition-transform hover:scale-110 focus:outline-none">
-                <FaPlay className="w-3 h-3 ml-0.5" />
-              </button>
-            </div>
-
           </div>
 
-          {/* RIGHT COLUMN: TEXT CONTENT, HIGHLIGHT ROWS, AND ACCORDIONS (7/12 Columns) */}
-          <div className="lg:col-span-7 space-y-8 pt-10 lg:pt-0">
-            
-            {/* Tagline & Main Title */}
-            <div className="space-y-4">
-              <div className="flex items-center space-x-2">
-                <div className="w-6 h-[3px] bg-[#3ca4f4]" />
-                <span className="text-[#3ca4f4] text-xs font-black tracking-widest uppercase">Our About Us</span>
+          {/* Hero Visual Banner */}
+          <div className="relative">
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-white">
+              <img
+                src="https://images.unsplash.com/photo-1581595220892-b0739db3ba8c?auto=format&fit=crop&w=1000&q=80"
+                alt="Laboratory research at Helix Diagnostic"
+                className="w-full h-[400px] object-cover"
+              />
+            </div>
+            {/* Floating Trust Badge */}
+            <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-xl shadow-xl border border-gray-100 hidden sm:flex items-center gap-3">
+              <div className="bg-emerald-100 p-3 rounded-lg text-emerald-600">
+                <CheckCircle2 className="w-6 h-6" />
               </div>
-              <h2 className="text-3xl sm:text-4xl lg:text-[40px] font-black text-[#0a2240] tracking-tight leading-tight">
-                More Than 15+ Years Of <br />Premium Hospitality.
-              </h2>
-              <p className="text-gray-500 text-sm sm:text-base leading-relaxed">
-                HotelHeaven is committed to providing an unparalleled lodging experience, seamlessly combining sophisticated design with tailored guest services to create an exceptional, home-like environment.
-              </p>
-            </div>
-
-            {/* 2-Column Highlight Features Section */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2 border-b border-gray-100 pb-6">
-              
-              {/* Feature 1: Guest Support */}
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-[#f4f8fc] flex items-center justify-center text-[#3ca4f4]">
-                    <FaHeadset className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-base font-extrabold text-[#0a2240] tracking-tight">24/7 Concierge Support</h3>
-                </div>
-                <p className="text-xs text-gray-400 leading-relaxed pl-13">
-                  Our professional desk staff and digital assistants are available at any hour to fulfill in-room services.
-                </p>
+              <div>
+                <p className="text-sm font-bold text-gray-900">100% Verified Accuracy</p>
+                <p className="text-xs text-gray-500">Government Accredited Laboratory</p>
               </div>
+            </div>
+          </div>
+        </section>
 
-              {/* Feature 2: Premium Management */}
-              <div className="space-y-3">
-                <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-[#f4f8fc] flex items-center justify-center text-[#3ca4f4]">
-                    <FaUserTie className="w-4 h-4" />
-                  </div>
-                  <h3 className="text-base font-extrabold text-[#0a2240] tracking-tight">Five-Star Dining</h3>
-                </div>
-                <p className="text-xs text-gray-400 leading-relaxed pl-13">
-                  Enjoy gourmet dining curated by certified award-winning executive chefs delivered straight to your suite.
-                </p>
+        {/* 2. Key Metrics Bar */}
+        <section className="bg-gray-900 text-white rounded-2xl p-8 shadow-xl">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+            {stats.map((stat, idx) => (
+              <div key={idx} className="space-y-1">
+                <p className="text-3xl sm:text-4xl font-extrabold text-blue-400">{stat.value}</p>
+                <p className="text-xs sm:text-sm text-gray-400 font-medium">{stat.label}</p>
               </div>
+            ))}
+          </div>
+        </section>
 
-            </div>
-
-            {/* Small Banner Row / Information Notice */}
-            <div className="flex items-center space-x-3 bg-slate-50 p-4 rounded-xl border border-gray-100">
-              <FaCheckCircle className="w-5 h-5 text-[#3ca4f4] shrink-0" />
-              <p className="text-xs sm:text-sm font-semibold text-gray-600">
-                Secure online reservation and immediate booking confirmation guarantee.{' '}
-                <button className="text-[#3ca4f4] hover:underline font-black uppercase text-[11px] tracking-wider ml-1">
-                  Read More +
-                </button>
-              </p>
-            </div>
-
-            {/* CTA Button */}
-            <div>
-              <button className="flex items-center space-x-2 bg-[#3ca4f4] hover:bg-[#2b93e3] text-white font-extrabold py-3.5 px-8 rounded-full shadow-md hover:shadow-lg transition-all duration-300 text-sm">
-                <span>About More</span>
-                <FaChevronRight className="w-2.5 h-2.5" />
-              </button>
-            </div>
-
+        {/* 3. Core Features Grid */}
+        <section className="space-y-8">
+          <div className="text-center space-y-3">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Why Patients Trust Helix</h2>
+            <p className="text-gray-600 max-w-xl mx-auto text-sm sm:text-base">
+              We combine modern diagnostic equipment with seamless digital report access to deliver an effortless experience.
+            </p>
           </div>
 
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {features.map((item, idx) => {
+              const Icon = item.icon;
+              return (
+                <div
+                  key={idx}
+                  className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow space-y-3"
+                >
+                  <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-lg flex items-center justify-center">
+                    <Icon className="w-6 h-6" />
+                  </div>
+                  <h3 className="text-lg font-bold text-gray-900">{item.title}</h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">{item.description}</p>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 4. Mission & Values Section */}
+        <section className="bg-white rounded-2xl border border-gray-200 p-8 sm:p-12 shadow-sm grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+          <div className="space-y-4">
+            <h2 className="text-2xl sm:text-3xl font-bold text-gray-900">Our Mission</h2>
+            <p className="text-gray-600 text-sm sm:text-base leading-relaxed">
+              To democratize access to high-precision health diagnostic services through digital transparency, fast report delivery, and uncompromised medical ethics.
+            </p>
+            <ul className="space-y-2 text-sm text-gray-700 pt-2">
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                Ethical & transparent pricing with no hidden charges.
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                Hassle-free online appointment scheduling & payment.
+              </li>
+              <li className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                Comprehensive digital archive of all delivered medical reports.
+              </li>
+            </ul>
+          </div>
+
+          <div className="bg-blue-50 p-6 sm:p-8 rounded-xl border border-blue-100 text-blue-950 space-y-3">
+            <Users className="w-8 h-8 text-blue-600" />
+            <h3 className="text-xl font-bold">Need Diagnostic Guidance?</h3>
+            <p className="text-sm text-blue-800">
+              Our medical helpdesk is available 24/7 to help you choose the right test panel or assist with booking.
+            </p>
+            <div className="pt-2">
+              <p className="text-xs font-semibold uppercase tracking-wider text-blue-600">Support Hotline</p>
+              <p className="text-lg font-extrabold">+1 (800) 435-4939</p>
+            </div>
+          </div>
+        </section>
+
       </div>
-    </section>
+    </div>
   );
-}
+};
+
+export default About;

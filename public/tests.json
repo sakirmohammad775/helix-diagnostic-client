@@ -1,0 +1,35 @@
+[
+  {
+    "_id": "655b1f8d91a123001a111111",
+    "title": "Full Body Comprehensive Checkup",
+    "image": "https://images.unsplash.com/photo-1579684385127-1ef15d508118?auto=format&fit=crop&w=800&q=80",
+    "description": "Complete physiological assessment covering liver, kidney, lipid profile, and blood counts.",
+    "fullDescription": "Our Full Body Comprehensive Checkup provides a complete evaluation of your vital organs and health parameters. Includes Complete Blood Count (CBC), Fasting Blood Sugar, Kidney Function Test (KFT), Liver Function Test (LFT), and Lipid Profile. Recommended annually for adults above 25.",
+    "price": 120,
+    "availableSlots": 8,
+    "availableDates": ["2026-07-22", "2026-07-25", "2026-08-01", "2026-08-10"],
+    "preparationInstructions": "Fast for 10-12 hours prior to test. Water is allowed."
+  },
+  {
+    "_id": "655b1f8d91a123001a222222",
+    "title": "High-Resolution Chest MRI",
+    "image": "https://images.unsplash.com/photo-1516549655169-df83a0774514?auto=format&fit=crop&w=800&q=80",
+    "description": "Non-invasive detailed imaging scan for pulmonary and thoracic diagnostic evaluations.",
+    "fullDescription": "Provides high-resolution cross-sectional imagery of thoracic organs, blood vessels, and soft tissue. Ideal for investigating persistent chest pain, breathing difficulties, or monitoring recovery progress.",
+    "price": 350,
+    "availableSlots": 3,
+    "availableDates": ["2026-07-23", "2026-07-28", "2026-08-05"],
+    "preparationInstructions": "Remove all metallic items prior to entry. Wear comfortable clothes."
+  },
+  {
+    "_id": "655b1f8d91a123001a333333",
+    "title": "Advanced Cardiac Lipid & Marker Panel",
+    "image": "https://images.unsplash.com/photo-1530026405186-ed1f139313f8?auto=format&fit=crop&w=800&q=80",
+    "description": "Targeted cardiovascular risk screening including ApoB and High-Sensitivity CRP.",
+    "fullDescription": "Comprehensive cardiovascular screening designed to detect early risk factors for heart disease. Tests ApoB, Lipoprotein(a), hs-CRP, and full lipid fraction analysis.",
+    "price": 95,
+    "availableSlots": 0,
+    "availableDates": ["2026-07-22", "2026-07-24"],
+    "preparationInstructions": "Avoid heavy physical exertion and alcohol 24 hours prior."
+  }
+]

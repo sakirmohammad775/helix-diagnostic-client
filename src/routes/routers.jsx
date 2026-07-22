@@ -12,6 +12,11 @@ import DashboardLayout from "../layout/DashboardLayout";
 import Profile from "../pages/Dashboard/Profile/Profile";
 import UpcomingAppointments from "../pages/Dashboard/DashboardHome/UpcomingAppointments";
 import TestResults from "../pages/Dashboard/DashboardHome/TestResults";
+import AllTests from "../pages/AllTest/AllTest";
+import TestDetails from "../pages/AllTest/TestDetails";
+import Services from "../pages/Home/Services/Services";
+import AddTest from "../pages/Dashboard/AdminDashboard/AddTest";
+import AllUsers from "../pages/Dashboard/AdminDashboard/AllUsers";
 
 export const routers = createBrowserRouter([
   {
@@ -41,26 +46,35 @@ export const routers = createBrowserRouter([
       },
       {
         path: "login",
-        Component:Login
+        Component: Login,
       },
       {
-        path:'profile',
-        element:<PrivateRoute><Profile></Profile></PrivateRoute>
-      }
+        path: "services",
+        element: <Services />,
+      },
+      {
+        path: "/tests",
+        element: <AllTests />,
+      },
+      {
+        path: "/tests/:id",
+        element: <TestDetails />,
+      },
     ],
   },
   {
-    path:"/dashboard",
-    element:<PrivateRoute><DashboardLayout></DashboardLayout></PrivateRoute>,
-    children:[
-      {
-        path:'profile',
-        element:<Profile></Profile>
-      },
+    path: "/dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayout></DashboardLayout>
+      </PrivateRoute>
+    ),
+    children: [
       {
         path: "profile",
-        element: <Profile />,
+        element: <Profile></Profile>,
       },
+
       {
         path: "appointments",
         element: <UpcomingAppointments />,
@@ -69,7 +83,14 @@ export const routers = createBrowserRouter([
         path: "results",
         element: <TestResults />,
       },
-
-    ]
-  }
+      {
+        path: "allUsers",
+        element: <AllUsers />,
+      },
+      {
+        path: "addTest",
+        element: <AddTest />,
+      },
+    ],
+  },
 ]);

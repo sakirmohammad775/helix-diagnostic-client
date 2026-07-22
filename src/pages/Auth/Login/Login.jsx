@@ -16,7 +16,7 @@ export default function Login() {
   const { register, handleSubmit, formState: { errors } } = useForm();
 
   // Redirect target calculation: checks location state history fallback parameters
-  const fromTarget = location.state?.from?.pathname || "/patient";
+  const fromTarget = location.state?.from?.pathname || "/dashboard/profile";
 
   const onSubmit = async (data) => {
     setLoading(true);
