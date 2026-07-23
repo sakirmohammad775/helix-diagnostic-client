@@ -1,188 +1,201 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import toast, { Toaster } from 'react-hot-toast';
-import { PlusCircle, Image as ImageIcon, DollarSign, Calendar, Layers, FileText } from 'lucide-react';
+import useAxiosPublic from '../../../hooks/useAxiosPublic'; // Adjust relative path as needed
+
+const imgbbApiKey = import.meta.env.VITE_image_host_key;
 
 const AddTest = () => {
+  const axiosPublic = useAxiosPublic();
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+
+  const [imageFile, setImageFile] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
 
   const [formData, setFormData] = useState({
     title: '',
-    image: '',
+    description: '',
+    fullDescription: '',
     price: '',
     availableSlots: '',
-    date: '',
-    description: '',
+    availableDates: '',
     preparationInstructions: '',
   });
 
   const addTestMutation = useMutation({
-    mutationFn: async (newTest) => {
-      const res = await fetch('http://localhost:5000/tests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newTest),
-      });
-      if (!res.ok) throw new Error('Failed to create test');
-      return res.json();
+    mutationFn: async (payload) => {
+      const res = await axiosPublic.post('/tests', payload);
+      return res.data;
     },
     onSuccess: () => {
-      toast.success('New diagnostic test successfully added!');
       queryClient.invalidateQueries({ queryKey: ['allTests'] });
-      // Reset Form
-      setFormData({
-        title: '',
-        image: '',
-        price: '',
-        availableSlots: '',
-        date: '',
-        description: '',
-        preparationInstructions: '',
-      });
-    },
-    onError: () => {
-      toast.error('Failed to add test. Please verify inputs.');
+      navigate('/tests'); // Navigate back to all tests page
     },
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!imageFile) {
+      alert('Please select an image file to upload.');
+      return;
+    }
 
-    // Format numbers and structure dates into array format
-    const payload = {
-      title: formData.title,
-      image: formData.image,
-      price: parseFloat(formData.price),
-      availableSlots: parseInt(formData.availableSlots, 10),
-      availableDates: [formData.date],
-      description: formData.description,
-      fullDescription: formData.description,
-      preparationInstructions: formData.preparationInstructions || 'Standard lab preparation applies.',
-    };
+    setImageUploading(true);
 
-    addTestMutation.mutate(payload);
+    try {
+      // 1. Upload Image to ImgBB
+      const imgFormData = new FormData();
+      imgFormData.append('image', imageFile);
+
+      const imgRes = await fetch(`https://api.imgbb.com/1/upload?key=${imgbbApiKey}`, {
+        method: 'POST',
+        body: imgFormData,
+      });
+
+      const imgData = await imgRes.json();
+
+      if (!imgData.success) {
+        throw new Error('Image upload failed');
+      }
+
+      const imageUrl = imgData.data.display_url;
+
+      // 2. Prepare payload & parse dates list
+      const datesArray = formData.availableDates
+        .split(',')
+        .map((d) => d.trim())
+        .filter((d) => d !== '');
+
+      const payload = {
+        title: formData.title,
+        image: imageUrl,
+        description: formData.description,
+        fullDescription: formData.fullDescription,
+        price: Number(formData.price),
+        availableSlots: Number(formData.availableSlots),
+        availableDates: datesArray,
+        preparationInstructions: formData.preparationInstructions,
+      };
+
+      // 3. Save to MongoDB
+      addTestMutation.mutate(payload);
+    } catch (err) {
+      console.error('Failed to add diagnostic test:', err);
+      alert('Error adding test. Please try again.');
+    } finally {
+      setImageUploading(false);
+    }
   };
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 max-w-3xl mx-auto space-y-6">
-      <Toaster position="top-right" />
+    <div className="max-w-3xl mx-auto my-8 p-6 bg-white rounded-xl shadow-sm border border-gray-200">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Add Diagnostic Test</h2>
 
-      <div className="border-b border-gray-100 pb-4">
-        <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-          <PlusCircle className="w-6 h-6 text-blue-600" /> Add New Diagnostic Test
-        </h2>
-        <p className="text-sm text-gray-500">Create a new test listing for patient bookings.</p>
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Test Name */}
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Test Name / Title</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Test Title</label>
           <input
             type="text"
             required
-            placeholder="e.g. Full Body Lipid Panel"
+            placeholder="e.g. Full Body Comprehensive Checkup"
             value={formData.title}
             onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Image URL */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-            <ImageIcon className="w-4 h-4 text-gray-400" /> Image URL
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Image Upload (ImgBB)</label>
           <input
-            type="url"
+            type="file"
             required
-            placeholder="https://images.unsplash.com/photo-..."
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            accept="image/*"
+            onChange={(e) => setImageFile(e.target.files[0])}
+            className="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:bg-blue-50 file:text-blue-700 font-medium hover:file:bg-blue-100"
           />
         </div>
 
-        {/* Grid Inputs: Price, Slots, Date */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-              <DollarSign className="w-4 h-4 text-gray-400" /> Price ($)
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Price ($)</label>
             <input
               type="number"
-              min="0"
-              step="0.01"
               required
-              placeholder="99.00"
+              min="0"
+              placeholder="e.g. 120"
               value={formData.price}
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
-
           <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-              <Layers className="w-4 h-4 text-gray-400" /> Capacity / Slots
-            </label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Available Slots</label>
             <input
               type="number"
-              min="1"
               required
-              placeholder="10"
+              min="0"
+              placeholder="e.g. 8"
               value={formData.availableSlots}
               onChange={(e) => setFormData({ ...formData, availableSlots: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-              <Calendar className="w-4 h-4 text-gray-400" /> Available Date
-            </label>
-            <input
-              type="date"
-              required
-              value={formData.date}
-              onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-              className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
 
-        {/* Description */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1 flex items-center gap-1">
-            <FileText className="w-4 h-4 text-gray-400" /> Test Description
-          </label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Short Description</label>
+          <input
+            type="text"
+            required
+            placeholder="Brief overview of the test"
+            value={formData.description}
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+            className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Full Description</label>
           <textarea
             rows="3"
             required
-            placeholder="Short details about the diagnostic procedure..."
-            value={formData.description}
-            onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            placeholder="Detailed breakdown of parameters checked"
+            value={formData.fullDescription}
+            onChange={(e) => setFormData({ ...formData, fullDescription: e.target.value })}
+            className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          ></textarea>
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Available Dates (Comma-separated)</label>
+          <input
+            type="text"
+            required
+            placeholder="2026-07-22, 2026-07-25, 2026-08-01"
+            value={formData.availableDates}
+            onChange={(e) => setFormData({ ...formData, availableDates: e.target.value })}
+            className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
-        {/* Preparation Instructions */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">Preparation Instructions</label>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Preparation Instructions</label>
           <input
             type="text"
-            placeholder="e.g. Fast for 10 hours before blood collection"
+            placeholder="e.g. Fast for 10-12 hours prior to test."
             value={formData.preparationInstructions}
             onChange={(e) => setFormData({ ...formData, preparationInstructions: e.target.value })}
-            className="w-full border border-gray-300 rounded-lg p-2.5 text-sm focus:ring-2 focus:ring-blue-500 focus:outline-none"
+            className="w-full p-2.5 border rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
 
         <button
           type="submit"
-          disabled={addTestMutation.isPending}
-          className="w-full py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-md disabled:bg-gray-400"
+          disabled={imageUploading || addTestMutation.isPending}
+          className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition disabled:opacity-50"
         >
-          {addTestMutation.isPending ? 'Publishing Test...' : 'Add Diagnostic Test'}
+          {imageUploading || addTestMutation.isPending ? 'Adding Test...' : 'Add Diagnostic Test'}
         </button>
       </form>
     </div>

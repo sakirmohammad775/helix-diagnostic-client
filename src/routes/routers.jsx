@@ -7,16 +7,21 @@ import { createBrowserRouter } from "react-router-dom";
 import Register from "../pages/Auth/Register/Register";
 import Login from "../pages/Auth/Login/Login";
 import PrivateRoute from "./PrivateRoute";
-
 import DashboardLayout from "../layout/DashboardLayout";
 import Profile from "../pages/Dashboard/Profile/Profile";
-import UpcomingAppointments from "../pages/Dashboard/DashboardHome/UpcomingAppointments";
 import TestResults from "../pages/Dashboard/DashboardHome/TestResults";
 import AllTests from "../pages/AllTest/AllTest";
 import TestDetails from "../pages/AllTest/TestDetails";
 import Services from "../pages/Home/Services/Services";
 import AddTest from "../pages/Dashboard/AdminDashboard/AddTest";
 import AllUsers from "../pages/Dashboard/AdminDashboard/AllUsers";
+import EditProfile from "../pages/Dashboard/Profile/EditProfile";
+import Appointments from "../pages/Dashboard/DashboardHome/Appointments";
+import Booking from "../pages/Dashboard/Booking/Booking";
+import Payment from "../pages/Dashboard/Payment/Payment";
+import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess";
+import UploadResult from "../pages/Dashboard/AdminDashboard/UploadResult";
+import AdminRoute from "./AdminRoute";
 
 export const routers = createBrowserRouter([
   {
@@ -74,22 +79,54 @@ export const routers = createBrowserRouter([
         path: "profile",
         element: <Profile></Profile>,
       },
+      {
+        path: "profile/edit",
+        element: <EditProfile />,
+      },
 
       {
         path: "appointments",
-        element: <UpcomingAppointments />,
+        element: <Appointments />,
       },
       {
-        path: "results",
+        path: "test-results",
         element: <TestResults />,
       },
       {
+        path: "upload-result",
+        element: (
+          <AdminRoute>
+            <UploadResult></UploadResult>
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "booking/:id",
+        element: <Booking />,
+      },
+      {
+        path: "payment",
+        element: <Payment></Payment>,
+      },
+      {
+        path: "payment-success",
+        element: <PaymentSuccess />,
+      },
+      {
         path: "allUsers",
-        element: <AllUsers />,
+        element: (
+          <AdminRoute>
+            <AllUsers />,
+          </AdminRoute>
+        ),
       },
       {
         path: "addTest",
-        element: <AddTest />,
+        element: (
+          <AdminRoute>
+            <AddTest />
+          </AdminRoute>
+        ),
       },
     ],
   },

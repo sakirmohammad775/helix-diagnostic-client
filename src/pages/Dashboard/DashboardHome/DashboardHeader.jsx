@@ -1,40 +1,48 @@
 import { Link } from 'react-router-dom';
-import { UserCircle, Menu, X } from 'lucide-react';
+import { UserCircle, Menu, X, ShieldCheck } from 'lucide-react';
+import useAuth from '../../../hooks/useAuth';
+import useRole from '../../../hooks/useRole';
 
-const DashboardHeader = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
+const DashboardHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
+  const { user } = useAuth();
+  const { role } = useRole();
+
   return (
-    <header className="h-16 bg-white border-b border-gray-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-10">
+    <header className="h-16 bg-white border-b border-slate-200 px-4 sm:px-6 flex items-center justify-between sticky top-0 z-30">
       
-      {/* Top Left: Hamburger Button (Mobile) + Logo & Brand Name */}
+      {/* Top Left: Mobile Toggle & Brand Logo */}
       <div className="flex items-center gap-3">
-        {/* Mobile Sidebar Toggle Button */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-1.5 rounded-lg text-gray-600 hover:bg-gray-100 md:hidden focus:outline-none"
+          className="p-1.5 rounded-lg text-slate-600 hover:bg-slate-100 md:hidden focus:outline-none transition"
           aria-label="Toggle Navigation Menu"
         >
           {isSidebarOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
 
-        {/* Your Original Logo Structure */}
-        <Link to="/" className="flex items-center gap-2">
-          <div className="bg-blue-600 text-white font-bold text-xl px-3 py-1 rounded">
-            H
+        <Link to="/" className="flex items-center gap-2.5">
+          <div className="bg-blue-600 text-white p-1.5 rounded-lg shadow-md shadow-blue-500/20">
+            <ShieldCheck size={20} />
           </div>
-          <span className="text-lg sm:text-xl font-bold text-gray-800 tracking-tight">
+          <span className="text-lg sm:text-xl font-bold text-slate-800 tracking-tight">
             Helix Diagnostic
           </span>
         </Link>
       </div>
 
-      {/* Top Right: Profile Details */}
+      {/* Top Right: User Profile */}
       <div className="flex items-center gap-3">
         <div className="text-right hidden sm:block">
-          <p className="text-sm font-semibold text-gray-700">
-            {user?.displayName || "Patient"}
-          </p>
-          <p className="text-xs text-gray-500">
-            {user?.email || "patient@helix.com"}
+          <div className="flex items-center justify-end gap-1.5">
+            <p className="text-sm font-bold text-slate-800">
+              {user?.displayName || "User"}
+            </p>
+            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
+              {role}
+            </span>
+          </div>
+          <p className="text-xs text-slate-400">
+            {user?.email || "No email available"}
           </p>
         </div>
 
@@ -42,10 +50,10 @@ const DashboardHeader = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
           <img 
             src={user.photoURL} 
             alt="Profile" 
-            className="w-10 h-10 rounded-full border border-gray-300 object-cover" 
+            className="w-10 h-10 rounded-full border border-slate-200 object-cover ring-2 ring-blue-50" 
           />
         ) : (
-          <UserCircle className="w-10 h-10 text-gray-400" />
+          <UserCircle className="w-10 h-10 text-slate-400" />
         )}
       </div>
     </header>
