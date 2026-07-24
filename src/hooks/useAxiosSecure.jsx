@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from './useAuth';
 
 const axiosSecure = axios.create({
-  baseURL: 'http://localhost:5000', // Update to your deployment URL when live
+  baseURL: import.meta.env.VITE_API_URL, // https://helix-diagnostic-server.vercel.app
 });
 
 const useAxiosSecure = () => {
