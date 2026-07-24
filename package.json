@@ -24,6 +24,8 @@
     "react-icons": "^5.7.0",
     "react-router": "^8.2.0",
     "react-router-dom": "^7.18.1",
+    "sweetalert": "^2.1.2",
+    "sweetalert2": "^11.26.25",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

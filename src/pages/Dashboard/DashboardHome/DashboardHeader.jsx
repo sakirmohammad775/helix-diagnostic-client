@@ -31,21 +31,7 @@ const DashboardHeader = ({ isSidebarOpen, setIsSidebarOpen }) => {
       </div>
 
       {/* Top Right: User Profile */}
-      <div className="flex items-center gap-3">
-        <div className="text-right hidden sm:block">
-          <div className="flex items-center justify-end gap-1.5">
-            <p className="text-sm font-bold text-slate-800">
-              {user?.displayName || "User"}
-            </p>
-            <span className="text-[10px] font-bold uppercase tracking-wider text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md">
-              {role}
-            </span>
-          </div>
-          <p className="text-xs text-slate-400">
-            {user?.email || "No email available"}
-          </p>
-        </div>
-
+      <div className="flex items-center gap-3 mr-5">
         {user?.photoURL ? (
           <img 
             src={user.photoURL} 

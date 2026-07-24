@@ -1,176 +1,126 @@
 import { useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import useAxiosPublic from "../../../hooks/useAxiosPublic";
-
-const imgbbApiKey = import.meta.env.VITE_IMGBB_API_KEY;
+import { useQuery } from "@tanstack/react-query";
+import useAxiosSecure from "../../../hooks/useAxiosSecure";
+import Swal from "sweetalert2";
 
 const UploadResult = () => {
-  const axiosPublic = useAxiosPublic();
-  const queryClient = useQueryClient();
-
+  const axiosSecure = useAxiosSecure();
   const [selectedAppointmentId, setSelectedAppointmentId] = useState("");
-  const [resultDetails, setResultDetails] = useState("");
-  const [reportPdfUrl, setReportPdfUrl] = useState("");
-  const [file, setFile] = useState(null);
-  const [uploading, setUploading] = useState(false);
+  const [reportDetails, setReportDetails] = useState("");
+  const [reportUrl, setReportUrl] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch all appointments pending test result upload
-  const { data: pendingAppointments = [], isLoading } = useQuery({
-    queryKey: ["pendingAppointments"],
+  // Fetch pending appointments
+  const { data: appointments = [], refetch, isLoading } = useQuery({
+    queryKey: ["pending-appointments"],
     queryFn: async () => {
-      const res = await axiosPublic.get("/appointments/delivered-pending");
+      const res = await axiosSecure.get("/appointments/delivered-pending");
       return res.data;
     },
   });
 
-  // Find selected appointment object
-  const selectedAppointment = pendingAppointments.find(
-    (app) => app._id === selectedAppointmentId,
-  );
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedAppointment) {
-      alert("Please select an appointment!");
-      return;
+
+    if (!selectedAppointmentId) {
+      return Swal.fire("Warning", "Please select an appointment ID", "warning");
     }
 
-    setUploading(true);
+    if (!reportUrl) {
+      return Swal.fire("Warning", "Please provide a report URL or file link", "warning");
+    }
 
     try {
-      let finalPdfUrl = reportPdfUrl;
+      setIsSubmitting(true);
+      const res = await axiosSecure.patch(`/appointments/deliver-result/${selectedAppointmentId}`, {
+        reportUrl,
+        details: reportDetails,
+      });
 
-      // Upload file to ImgBB if chosen
-      if (file) {
-        const imageFormData = new FormData();
-        imageFormData.append("image", file);
-        const imgRes = await fetch(
-          `https://api.imgbb.com/1/upload?key=${imgbbApiKey}`,
-          {
-            method: "POST",
-            body: imageFormData,
-          },
-        );
-        const imgData = await imgRes.json();
-        if (imgData.success) {
-          finalPdfUrl = imgData.data.display_url;
-        }
-      }
+      if (res.data.modifiedCount > 0) {
+        Swal.fire({
+          title: "Success!",
+          text: "Test result delivered to patient profile successfully.",
+          icon: "success",
+        });
 
-      const payload = {
-        appointmentId: selectedAppointment._id,
-        userEmail: selectedAppointment.userEmail,
-        userName: selectedAppointment.userName,
-        testTitle: selectedAppointment.testTitle,
-        resultDetails,
-        reportPdfUrl: finalPdfUrl,
-      };
-
-      const res = await axiosPublic.post("/test-results", payload);
-
-      if (res.data.insertedId) {
-        alert("Test result successfully delivered to patient!");
+        // Reset Form
         setSelectedAppointmentId("");
-        setResultDetails("");
-        setReportPdfUrl("");
-        setFile(null);
-        queryClient.invalidateQueries({ queryKey: ["pendingAppointments"] });
+        setReportDetails("");
+        setReportUrl("");
+        refetch(); // Refresh dropdown list
       }
-    } catch (err) {
-      console.error("Error submitting result:", err);
-      alert("Failed to upload test result.");
+    } catch (error) {
+      Swal.fire("Error", "Failed to upload result. Please try again.", "error");
     } finally {
-      setUploading(false);
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-gray-200 max-w-2xl mx-auto my-6">
-      <h2 className="text-2xl font-bold text-gray-800 mb-2">
-        Deliver Test Result
-      </h2>
-      <p className="text-sm text-gray-500 mb-6">
-        Select an appointment to automatically attach and deliver results to the
-        patient.
+    <div className="max-w-2xl mx-auto bg-white p-6 sm:p-8 rounded-2xl border border-slate-200 shadow-sm">
+      <h2 className="text-2xl font-bold text-slate-800">Deliver Test Result</h2>
+      <p className="text-sm text-slate-500 mt-1 mb-6">
+        Select a booked appointment ID to attach and deliver results to the patient.
       </p>
 
       <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Dropdown Select Appointment */}
+        {/* Select Appointment ID Dropdown */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Select Appointment *
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            Select Appointment (ID / Patient) *
           </label>
           <select
-            required
             value={selectedAppointmentId}
             onChange={(e) => setSelectedAppointmentId(e.target.value)}
-            className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
+            required
+            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-800 text-sm"
           >
-            <option value="">-- Choose Booked Appointment --</option>
-            {pendingAppointments.map((app) => (
+            <option value="">-- Choose Booked Appointment ID --</option>
+            {appointments.map((app) => (
               <option key={app._id} value={app._id}>
-                {app.testTitle || app.testName || "Test"} —{" "}
-                {app.userName || app.name || "Patient"} (
-                {app.userEmail || app.email})
+                ID: {app._id} | {app.testTitle || app.testName} ({app.userName || app.userEmail})
               </option>
             ))}
           </select>
         </div>
 
-        {/* Auto-filled details review */}
-        {selectedAppointment && (
-          <div className="p-4 bg-blue-50/60 border border-blue-100 rounded-xl text-xs space-y-1 text-blue-900">
-            <p>
-              <strong>Patient Email:</strong> {selectedAppointment.userEmail}
-            </p>
-            <p>
-              <strong>Patient Name:</strong> {selectedAppointment.userName}
-            </p>
-            <p>
-              <strong>Test Name:</strong> {selectedAppointment.testTitle}
-            </p>
-          </div>
-        )}
-
-        {/* Result Findings / Summary */}
+        {/* Observation / Details Field */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
             Result Details / Observations
           </label>
           <textarea
             rows="3"
-            value={resultDetails}
-            onChange={(e) => setResultDetails(e.target.value)}
+            value={reportDetails}
+            onChange={(e) => setReportDetails(e.target.value)}
             placeholder="e.g. Hemoglobin level normal at 14.5 g/dL..."
-            className="w-full rounded-xl border border-gray-300 p-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none"
-          />
+            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-800 text-sm"
+          ></textarea>
         </div>
 
-        {/* Report File Link / Upload */}
+        {/* Report File Link URL */}
         <div>
-          <label className="block text-sm font-semibold text-gray-700 mb-1">
-            Upload Report (File or URL)
+          <label className="block text-sm font-semibold text-slate-700 mb-1.5">
+            Upload Report URL (Direct File or PDF Link) *
           </label>
           <input
             type="url"
-            value={reportPdfUrl}
-            onChange={(e) => setReportPdfUrl(e.target.value)}
-            placeholder="https://i.ibb.co/report.pdf (Direct link)"
-            className="w-full rounded-xl border border-gray-300 p-3 text-sm mb-2 focus:ring-2 focus:ring-blue-500 outline-none"
-          />
-          <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="text-xs text-gray-500 file:mr-3 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            value={reportUrl}
+            onChange={(e) => setReportUrl(e.target.value)}
+            placeholder="https://i.ibb.co/report.pdf or Drive Link"
+            required
+            className="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-blue-500 bg-slate-50 text-slate-800 text-sm"
           />
         </div>
 
+        {/* Submit Button */}
         <button
           type="submit"
-          disabled={uploading || isLoading}
-          className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition shadow-sm disabled:opacity-50 text-sm"
+          disabled={isSubmitting || isLoading}
+          className="w-full py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-md transition disabled:opacity-50"
         >
-          {uploading ? "Delivering Report..." : "Submit & Release Test Result"}
+          {isSubmitting ? "Delivering Result..." : "Submit & Release Test Result"}
         </button>
       </form>
     </div>

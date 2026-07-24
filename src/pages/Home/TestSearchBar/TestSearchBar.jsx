@@ -62,10 +62,13 @@ export default function TestSearchBar() {
             </div>
           ) : displayedTests.length > 0 ? (
             <div className="space-y-8">
+              
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
                 {displayedTests.map((test) => (
-                  <div 
+                 
+                  <Link 
                     key={test._id} 
+                     to={`/tests/${test._id}`}
                     className="bg-white p-5 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-4"
                   >
                     {/* Test Title & Price */}
@@ -101,10 +104,11 @@ export default function TestSearchBar() {
                         <span className="text-gray-400 italic block">No dates scheduled</span>
                       )}
                     </div>
-                  </div>
+                  </Link>
+                  
                 ))}
               </div>
-
+              
               {/* VIEW ALL BUTTON */}
               <div className="text-center pt-2">
                 <Link 
