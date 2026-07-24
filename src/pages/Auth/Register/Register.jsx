@@ -117,7 +117,7 @@ export default function Register() {
       
       // Redirect to patient route after success
       setTimeout(() => {
-        navigate('/patient');
+        navigate('/dashboard/profile');
       }, 1500);
 
     } catch (error) {

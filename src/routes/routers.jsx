@@ -23,7 +23,6 @@ import PaymentSuccess from "../pages/Dashboard/Payment/PaymentSuccess";
 import UploadResult from "../pages/Dashboard/AdminDashboard/UploadResult";
 import AdminRoute from "./AdminRoute";
 import PaymentHistory from "../pages/Dashboard/DashboardHome/PaymentHistory";
-import UsersDatabase from "../pages/Dashboard/AdminDashboard/UserDetails";
 import UserDetails from "../pages/Dashboard/AdminDashboard/UserDetails";
 
 export const routers = createBrowserRouter([
